@@ -3,11 +3,13 @@ import random
 import time
 import sys
 
+DEBUG           = True  # Debug before real use, disable request sending
 DELAY           = 0     # Delay between requests, ignored if DELAY_RAND is True
 DELAY_RAND      = False # Enable random delay
 DELAY_RAND_MIN  = 1     # min time to wait
 DELAY_RAND_MAX  = 3     # max time to wait
 COUNT           = 1000  # Requests to send
+REDIRECTS       = False # Allow redirects
 URL             = 'https://***/submit.php'
 
 # Edit **CHANGEME** below before run
@@ -67,6 +69,9 @@ def get_pass():
         passw = passw.capitalize()
     return passw
 
+if DEBUG:
+    print("=== DEBUG is True, nothin will be sent ===")
+    time.sleep(2)
 
 for i in range(1,COUNT):
     count += 1
@@ -92,11 +97,15 @@ for i in range(1,COUNT):
     
     if((count % 50 == 0)):
         print()
-        print("count :", count, data['login']+':' +data['password'])
+        print("count :", count, data['login'] + ':' + data['password'])
 
-    response = requests.post(URL, headers=headers, data=data, allow_redirects=False)
-    print('.', end='')
-    sys.stdout.flush()
+    if not DEBUG:
+        response = requests.post(URL, headers=headers, data=data, allow_redirects=REDIRECTS)
+        print('.', end='')
+        sys.stdout.flush()
+    else :
+        print(headers)
+        print(data)
 
     if(DELAY_RAND):
         time.sleep(random.randint(DELAY_RAND_MIN,DELAY_RAND_MAX))
